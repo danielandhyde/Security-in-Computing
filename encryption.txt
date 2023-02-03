@@ -1,0 +1,100 @@
+/*=============================================================================
+| Assignment: pa01 - Encrypting a plaintext file using the Vigenere cipher
+|
+| Author: Daniel Thew
+| Language: Java
+|
+| To Compile: javac pa01.java
+|
+| To Execute: java -> java pa01 kX.txt pX.txt
+| where kX.txt is the keytext file
+| and pX.txt is plaintext file
+|
+| Note: All input files are simple 8 bit ASCII input
+|
+| Class: CIS3360 - Security in Computing - Spring 2022
+| Instructor: McAlpin
+| Due Date: 02/27/22
+|
++=============================================================================*/
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class pa01 {
+    static int MAX = 512;
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner hal = new Scanner(System.in);
+        String keyFile = hal.nextLine();
+        String plainFile = hal.nextLine();
+
+        File k = new File(keyFile);
+        File p = new File(plainFile);
+
+        Scanner sky = new Scanner(k);
+        Scanner net = new Scanner(p);
+
+        String keyText = "";
+        while(sky.hasNextLine())
+            keyText = keyText.concat(sky.nextLine());
+
+        String plainText = "";
+        while(net.hasNextLine())
+            plainText = plainText.concat(net.nextLine());
+
+        keyText = spaghettify(keyText);
+        plainText = spaghettify(plainText);
+        plainText = exify(plainText);
+
+        String cipherText = vigenere(keyText, plainText);
+
+        printText(keyText);
+        printText(plainText);
+        printText(cipherText);
+    }
+
+    static String spaghettify(String s){
+        for(int i = 0; i < s.length(); i++){
+            if(!Character.isLetter(s.charAt(i))){
+                s = s.replace(Character.toString(s.charAt(i)), "");
+                i--;
+            }
+        }
+        s = s.toLowerCase();
+        return s;
+    }
+
+    static String exify(String s){
+        while(s.length() < MAX) s = s.concat("x");
+        return s;
+    }
+
+    static String vigenere(String key, String plain){
+        String cipher = "";
+        for(int i = 0; i < MAX; i++){
+            char ciChar = (char)((((key.charAt(i % key.length()) - 97) + (plain.charAt(i) - 97)) % 26)+97);
+            cipher = cipher.concat(Character.toString(ciChar));
+        }
+        return cipher;
+    }
+
+    static void printText(String s){
+        int start = 0;
+        while(start + 80 <= s.length()){
+            System.out.println(s.substring(start, start+80));
+            start += 80;
+        }
+        System.out.println(s.substring(start));
+        System.out.println();
+    }
+}
+
+/*=============================================================================
+| I Daniel Thew (4993734) affirm that this program is
+| entirely my own work and that I have neither developed my code together with
+| any another person, nor copied any code from any other person, nor permitted
+| my code to be copied or otherwise used by any other person, nor have I
+| copied, modified, or otherwise used programs created by others. I acknowledge
+| that any violation of the above terms will be treated as academic dishonesty.
++=============================================================================*/
